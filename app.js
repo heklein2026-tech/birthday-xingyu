@@ -900,11 +900,6 @@
   const treasureBox = document.getElementById("treasureBox");
   const giftCard = document.getElementById("giftCard");
   const giftGallery = document.getElementById("giftGallery");
-  const trackPanel = document.getElementById("trackPanel");
-  const trackLabel = document.getElementById("trackLabel");
-  const trackNo = document.getElementById("trackNo");
-  const trackCopyBtn = document.getElementById("trackCopyBtn");
-  const trackOpenBtn = document.getElementById("trackOpenBtn");
   const candle2 = document.getElementById("candle2");
   const flame2 = document.getElementById("flame2");
 
@@ -922,41 +917,6 @@
       detail: "https://m.kuaidi100.com/result.jsp?nu=" + no,
       guoguo: "https://m.guoguo-app.com/guoguowap/default.html",
     };
-  }
-
-  function openExpressDetail(mailNo) {
-    if (!mailNo) return;
-    var urls = buildTrackUrls(mailNo);
-    // 用 <a> 点击，兼容 iOS Safari / 微信内打开
-    var a = document.createElement("a");
-    a.href = urls.detail;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  }
-
-  function showTrack(name, track, itemBtn, shouldJump) {
-    currentTrack = track;
-    if (trackPanel) trackPanel.hidden = false;
-    if (trackLabel) trackLabel.textContent = name + " · 快递单号";
-    if (trackNo) trackNo.textContent = track;
-    if (trackCopyBtn) {
-      trackCopyBtn.textContent = "复制单号";
-      trackCopyBtn.classList.remove("is-copied");
-    }
-    if (trackOpenBtn) {
-      var urls = buildTrackUrls(track);
-      trackOpenBtn.href = urls.detail;
-      trackOpenBtn.textContent = "打开快递详情";
-    }
-    if (giftGallery) {
-      giftGallery.querySelectorAll(".gift-item").forEach(function (el) {
-        el.classList.toggle("is-active", el === itemBtn);
-      });
-    }
-    if (shouldJump) openExpressDetail(track);
   }
 
   function getGiftIndex() {
@@ -984,15 +944,12 @@
     }
     if (giftPrev) giftPrev.disabled = idx <= 0;
     if (giftNext) giftNext.disabled = idx >= items.length - 1;
+    items.forEach(function (el, i) {
+      el.classList.toggle("is-active", i === idx);
+      if (i !== idx) el.classList.remove("is-flipped");
+    });
     var cur = items[idx];
-    if (cur) {
-      showTrack(
-        cur.getAttribute("data-name") || "礼物",
-        cur.getAttribute("data-track") || "",
-        cur,
-        false
-      );
-    }
+    if (cur) currentTrack = cur.getAttribute("data-track") || "";
   }
 
   function scrollGiftBy(delta) {
@@ -1009,7 +966,7 @@
     }
   }
 
-  async function copyTrack() {
+  async function copyTrack(btn) {
     if (!currentTrack) return;
     var ok = false;
     try {
@@ -1035,24 +992,42 @@
       }
       document.body.removeChild(ta);
     }
-    if (trackCopyBtn) {
-      trackCopyBtn.textContent = ok ? "已复制" : "复制失败，请长按单号";
-      trackCopyBtn.classList.toggle("is-copied", ok);
+    if (btn) {
+      btn.textContent = ok ? "已复制" : "复制失败，请长按单号";
+      btn.classList.toggle("is-copied", ok);
+      window.setTimeout(function () {
+        btn.textContent = "复制单号";
+        btn.classList.remove("is-copied");
+      }, 1600);
     }
   }
 
   if (giftGallery) {
     giftGallery.addEventListener("click", function (e) {
-      var photo = e.target.closest(".gift-photo");
-      if (!photo) return;
-      var item = photo.closest(".gift-item");
-      if (!item) return;
-      showTrack(
-        item.getAttribute("data-name") || "礼物",
-        item.getAttribute("data-track") || "",
-        item,
-        true
-      );
+      var front = e.target.closest(".gift-flip-front");
+      if (front) {
+        var item = front.closest(".gift-item");
+        if (!item) return;
+        item.classList.toggle("is-flipped");
+        currentTrack = item.getAttribute("data-track") || "";
+        return;
+      }
+      var backOnly = e.target.closest(".gift-flip-back-btn");
+      if (backOnly) {
+        var backItem = backOnly.closest(".gift-item");
+        if (backItem) backItem.classList.remove("is-flipped");
+        return;
+      }
+      var copyBtn = e.target.closest(".track-copy");
+      if (copyBtn) {
+        e.preventDefault();
+        currentTrack =
+          copyBtn.getAttribute("data-track") ||
+          (copyBtn.closest(".gift-item") &&
+            copyBtn.closest(".gift-item").getAttribute("data-track")) ||
+          "";
+        copyTrack(copyBtn);
+      }
     });
 
     giftGallery.addEventListener("scroll", syncGiftUI, { passive: true });
@@ -1062,7 +1037,6 @@
   var giftNextBtn = document.getElementById("giftNext");
   if (giftPrevBtn) giftPrevBtn.addEventListener("click", function () { scrollGiftBy(-1); });
   if (giftNextBtn) giftNextBtn.addEventListener("click", function () { scrollGiftBy(1); });
-  if (trackCopyBtn) trackCopyBtn.addEventListener("click", copyTrack);
 
   // 默认选中第一件礼物单号
   currentTrack = "313082364457335";
