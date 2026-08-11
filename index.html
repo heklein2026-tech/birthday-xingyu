@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#7EB8C9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>致小星 · 23</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Great+Vibes&family=Noto+Serif+SC:wght@400;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <!-- 昼夜天空层：随滚动插值 -->
+  <div class="sky" id="sky" aria-hidden="true">
+    <div class="sky-day"></div>
+    <div class="sky-dusk"></div>
+    <div class="sky-night"></div>
+    <div class="horizon"></div>
+    <div class="sea"></div>
+    <div class="foam"></div>
+    <div class="petals" id="petals"></div>
+    <canvas class="stars-canvas" id="starsCanvas"></canvas>
+  </div>
+
+  <!-- 音乐：进页尝试播放；iOS 会在首次点击（拆信封）时真正响起 -->
+  <button class="music-btn" id="musicBtn" type="button" aria-label="音乐">
+    <span class="music-icon" aria-hidden="true">♪</span>
+    <span class="music-label">音乐</span>
+  </button>
+  <audio id="bgMusic" preload="auto" loop playsinline>
+    <source src="assets/audio/才二十三.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- ===== 开场：拆信封 ===== -->
+  <section class="screen intro" id="intro">
+    <div class="intro-atmosphere" aria-hidden="true"></div>
+    <p class="intro-date">八月十二日</p>
+    <h1 class="intro-name">王星宇</h1>
+    <p class="intro-sub">致星宇 · 二十三岁</p>
+
+    <button class="envelope" id="envelope" type="button" aria-label="打开信封">
+      <div class="envelope-shadow"></div>
+      <div class="envelope-body">
+        <div class="envelope-flap" id="envelopeFlap"></div>
+        <div class="envelope-letter" id="envelopeLetter">
+          <span>给星宇</span>
+        </div>
+        <div class="envelope-front">
+          <span class="wax">✦</span>
+        </div>
+      </div>
+      <span class="envelope-hint" id="envelopeHint">轻触打开 · 音乐响起</span>
+    </button>
+  </section>
+
+  <!-- ===== 旅程主体（拆信后显示） ===== -->
+  <main class="journey" id="journey" hidden>
+    <!-- 启程：拆信封后立刻全屏爱心 -->
+    <section class="stop stop-start" id="startStop" data-phase="0.05">
+      <canvas class="fx-canvas" id="fxCanvas" aria-hidden="true"></canvas>
+      <div class="heart-stage" id="heartStage">
+        <p class="stop-label heart-label">启程 · 晨光花岸</p>
+        <h2 class="stop-title heart-title">Today is your birthday!</h2>
+        <p class="stop-line heart-line">从一封信开始，顺着海岸往前走。</p>
+
+        <button class="heart-hit" id="heartHit" type="button" aria-label="点击爱心">
+          <canvas class="heart-canvas" id="heartCanvas" width="640" height="640"></canvas>
+        </button>
+        <p class="heart-love" id="heartLove" aria-live="polite">Love you, my friend</p>
+        <p class="heart-hint" id="heartHint">轻触爱心</p>
+        <p class="scroll-cue heart-scroll" aria-hidden="true">向下滑动继续</p>
+      </div>
+    </section>
+
+    <!-- 花路 · 照片站 -->
+    <section class="stop stop-photo" data-phase="0.18">
+      <div class="stop-inner">
+        <p class="stop-label">花路 · 上午</p>
+        <figure class="photo-frame">
+          <img src="assets/photos/01.jpg" alt="星宇的照片" loading="lazy" data-fallback="assets/photos/01.svg" />
+          <figcaption>生于盛夏，注定会灿烂明媚。</figcaption>
+        </figure>
+        <p class="stop-line">盛夏的风，先吹过花丛。祝你些什么呢?</p>
+      </div>
+    </section>
+
+    <section class="stop stop-photo" data-phase="0.28">
+      <div class="stop-inner">
+        <p class="stop-label">花路 · 深处</p>
+        <figure class="photo-frame tilt-left">
+          <img src="assets/photos/02.jpg" alt="星宇的照片" loading="lazy" data-fallback="assets/photos/02.svg" />
+          <figcaption>你的笑容，可抵世间万千。</figcaption>
+        </figure>
+        <p class="stop-line">祝人幸福是虚妄的，那我祝你拥有闲来无事的下午。</p>
+      </div>
+    </section>
+
+    <!-- 浅湾 -->
+    <section class="stop stop-photo" data-phase="0.38">
+      <div class="stop-inner">
+        <p class="stop-label">浅湾 · 午后</p>
+        <figure class="photo-frame tilt-right">
+          <img src="assets/photos/03.jpg" alt="星宇的照片" loading="lazy" data-fallback="assets/photos/03.svg" />
+          <figcaption>人生那么辽阔,也可以四处走走看看。</figcaption>
+        </figure>
+        <p class="stop-line">祝你到喜欢的餐厅不用排队，祝你去公园的时候可以一人坐拥整条长椅</p>
+      </div>
+    </section>
+
+    <section class="stop stop-photo" data-phase="0.48">
+      <div class="stop-inner">
+        <p class="stop-label">浅湾 · 潮声</p>
+        <figure class="photo-frame">
+          <img src="assets/photos/04.jpg" alt="星宇的照片" loading="lazy" data-fallback="assets/photos/04.svg" />
+          <figcaption>在人生的六点</figcaption>
+        </figure>
+        <p class="stop-line">祝你享受朋友的喧闹，也享受灵魂自洽的孤独。</p>
+      </div>
+    </section>
+
+    <!-- 暮色 -->
+    <section class="stop stop-photo" data-phase="0.58">
+      <div class="stop-inner">
+        <p class="stop-label">暮色 · 海岸</p>
+        <figure class="photo-frame tilt-left">
+          <img src="assets/photos/05.jpg" alt="星宇的照片" loading="lazy" data-fallback="assets/photos/05.svg" />
+          <figcaption>二十三岁，像清晨刚开始亮。</figcaption>
+        </figure>
+        <p class="stop-line">祝你像八月一样热烈，像夏风一样自由。</p>
+      </div>
+    </section>
+
+    <section class="stop stop-photo" data-phase="0.68">
+      <div class="stop-inner">
+        <p class="stop-label">暮色 · 交界</p>
+        <figure class="photo-frame tilt-right">
+          <img src="assets/photos/06.jpg" alt="星宇的照片" loading="lazy" data-fallback="assets/photos/06.svg" />
+          <figcaption>我最亲爱的朋友，你灿如繁星。</figcaption>
+        </figure>
+        <p class="stop-line">而我的第一颗星，已经亮了。</p>
+      </div>
+    </section>
+
+    <section class="stop stop-photo" data-phase="0.78">
+      <div class="stop-inner">
+        <p class="stop-label">星初 · 夜岸</p>
+        <figure class="photo-frame">
+          <img src="assets/photos/07.jpg" alt="星宇的照片" loading="lazy" data-fallback="assets/photos/07.svg" />
+          <figcaption>我想让你的一切美好都被看见</figcaption>
+        </figure>
+        <p class="stop-line">也想要和你做一辈子朋友</p>
+      </div>
+    </section>
+
+    <!-- 星海：点星 -->
+    <section class="stop stop-stars" id="starStop" data-phase="0.88">
+      <div class="star-words" id="starWords" aria-live="polite"></div>
+      <div class="sky-taps" id="wishStars" role="group" aria-label="可点亮的星星"></div>
+      <div class="stop-inner stop-inner-stars">
+        <p class="stop-label">星海 · 夜空</p>
+        <h2 class="stop-title" id="starTitle">点亮几颗星</h2>
+        <p class="star-title-en" id="starTitleEn" hidden>You are the brightest and most unique star in my night sky.</p>
+        <p class="stop-line" id="starHint">跟随光波，轻触星空</p>
+        <div class="meteor" id="meteor" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- 终章 -->
+    <section class="stop stop-finale" id="finale" data-phase="1">
+      <div class="stop-inner finale-inner">
+        <p class="stop-label">二十三 · 终章</p>
+        <h2 class="finale-name"><span class="finale-en">Dear</span>王星宇</h2>
+        <div class="finale-letter" id="finaleLetter">
+          <p>生日快乐！</p>
+          <p>人生那么辽阔，不一定要往高处走，也可以四处走。</p>
+          <p>23岁，在人生的6点，在热烈的盛夏。</p>
+          <p>祝你一直生机勃勃，祝你高歌猛进，顺利前行！</p>
+          <p class="finale-closing">祝愿，我们有望不到的以后~</p>
+        </div>
+        <p class="finale-from"><span class="finale-en">Yours sincerely,</span>小何</p>
+        <button class="play-cta" id="playCta" type="button">
+          <span>播放 才二十三</span>
+        </button>
+        <button class="gift-open-btn" id="giftOpenBtn" type="button">
+          <span>打开生日礼物</span>
+        </button>
+        <div class="finale-petals" id="finalePetals" aria-hidden="true"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== 生日吹蜡烛互动弹窗（5 环节） ===== -->
+  <div class="gift-modal" id="giftModal" hidden>
+    <div class="gift-blur" aria-hidden="true"></div>
+    <div class="gift-petals" id="giftPetals" aria-hidden="true"></div>
+    <div class="gift-confetti" id="giftConfetti" aria-hidden="true"></div>
+    <div class="gift-frame" role="dialog" aria-modal="true" aria-labelledby="giftTitle">
+      <svg class="gift-ring" viewBox="0 0 320 320" aria-hidden="true">
+        <defs>
+          <linearGradient id="ringGold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f0d48a"/>
+            <stop offset="50%" stop-color="#c9a24a"/>
+            <stop offset="100%" stop-color="#efe0a8"/>
+          </linearGradient>
+        </defs>
+        <circle cx="160" cy="160" r="148" fill="none" stroke="url(#ringGold)" stroke-width="3" opacity="0.85"/>
+        <circle cx="160" cy="160" r="138" fill="none" stroke="url(#ringGold)" stroke-width="1.2" opacity="0.45" stroke-dasharray="4 6"/>
+      </svg>
+      <div class="gift-wisteria" aria-hidden="true"></div>
+
+      <!-- 环节1 -->
+      <div class="gift-step is-active" data-step="1">
+        <h2 class="gift-title" id="giftTitle">生日快乐，小星！</h2>
+        <p class="gift-sub">你的生日蛋糕已准备好</p>
+        <div class="cake-wrap is-enter" id="cakeWrap">
+          <div class="cake" id="cake">
+            <div class="candle is-lit" id="candle">
+              <span class="candle-body"></span>
+              <span class="flame" id="flame"></span>
+              <span class="wick"></span>
+            </div>
+            <div class="berries" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="tier tier-top"><span class="drip"></span></div>
+            <div class="ribbon"><span class="bow"></span></div>
+            <div class="tier tier-bottom"><span class="drip"></span></div>
+            <div class="cake-plate"></div>
+          </div>
+        </div>
+        <button class="gift-btn" id="btnStartBlow" type="button">开始吹蜡烛</button>
+      </div>
+
+      <!-- 环节2 -->
+      <div class="gift-step" data-step="2">
+        <h2 class="gift-title">对着蛋糕用力吹气</h2>
+        <div class="blow-meter" id="blowMeter" aria-label="吹气进度">
+          <div class="blow-wave" id="blowWave"></div>
+          <div class="blow-fill" id="blowFill"></div>
+        </div>
+        <p class="gift-hint" id="blowHint">按住屏幕吹气</p>
+        <div class="cake-wrap cake-wrap-sm">
+          <div class="cake">
+            <div class="candle is-lit" id="candle2">
+              <span class="candle-body"></span>
+              <span class="flame" id="flame2"></span>
+              <span class="wick"></span>
+            </div>
+            <div class="berries" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="tier tier-top"><span class="drip"></span></div>
+            <div class="ribbon"><span class="bow"></span></div>
+            <div class="tier tier-bottom"><span class="drip"></span></div>
+            <div class="cake-plate"></div>
+          </div>
+        </div>
+        <div class="blow-ripples" id="blowRipples" aria-hidden="true"></div>
+      </div>
+
+      <!-- 环节3 -->
+      <div class="gift-step" data-step="3">
+        <h2 class="gift-title">蜡烛吹灭啦！</h2>
+        <div class="cake-wrap cake-wrap-sm">
+          <div class="cake">
+            <div class="candle is-out" id="candle3">
+              <span class="candle-body"></span>
+              <span class="wick"></span>
+              <span class="smoke"></span>
+            </div>
+            <div class="berries" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <div class="tier tier-top"><span class="drip"></span></div>
+            <div class="ribbon"><span class="bow"></span></div>
+            <div class="tier tier-bottom"><span class="drip"></span></div>
+            <div class="cake-plate"></div>
+          </div>
+        </div>
+        <p class="wish-toast" id="wishToast">生日愿望已收下</p>
+        <button class="gift-btn" id="btnClaimGift" type="button">领取生日礼物</button>
+      </div>
+
+      <!-- 环节4 -->
+      <div class="gift-step" data-step="4">
+        <h2 class="gift-title">生日快乐礼物已解锁</h2>
+        <div class="treasure" id="treasure">
+          <div class="treasure-glow"></div>
+          <div class="treasure-box" id="treasureBox">
+            <div class="box-lid"></div>
+            <div class="box-body"></div>
+            <div class="box-bow"></div>
+          </div>
+        </div>
+        <p class="gift-sub">点击领取，查看你的专属生日礼物</p>
+        <button class="gift-btn" id="btnOpenGift" type="button">立即领取</button>
+      </div>
+
+      <!-- 环节5 -->
+      <div class="gift-step" data-step="5">
+        <h2 class="gift-title">生日礼物详情</h2>
+        <article class="gift-card" id="giftCard">
+          <p class="gift-card-lead">左右滑动或点箭头切换；点击图片查快递</p>
+          <div class="gift-carousel">
+            <button class="gift-nav gift-prev" id="giftPrev" type="button" aria-label="上一个礼物">‹</button>
+            <div class="gift-gallery" id="giftGallery">
+              <div class="gift-item" data-track="313082364457335" data-name="契诃夫文学牌">
+                <button class="gift-photo" type="button" aria-label="查看文学小牌快递">
+                  <img src="assets/gifts/gift-01.png" alt="契诃夫文学冰箱贴" loading="lazy" />
+                </button>
+                <span class="gift-item-name">文学冰箱贴</span>
+                <span class="gift-item-track">单号 313082364457335</span>
+              </div>
+              <div class="gift-item" data-track="313082364440565" data-name="Infinite Poetry 日历">
+                <button class="gift-photo" type="button" aria-label="查看诗歌日历快递">
+                  <img src="assets/gifts/gift-02.png" alt="Infinite Poetry 日历" loading="lazy" />
+                </button>
+                <span class="gift-item-name">诗歌日历</span>
+                <span class="gift-item-track">单号 313082364440565</span>
+              </div>
+              <div class="gift-item" data-track="73721344117155" data-name="小小气味书香薰">
+                <button class="gift-photo" type="button" aria-label="查看小小气味书快递">
+                  <img src="assets/gifts/gift-03.png" alt="小小气味书香薰" loading="lazy" />
+                </button>
+                <span class="gift-item-name">小小气味书香薰</span>
+                <span class="gift-item-track">单号 73721344117155</span>
+              </div>
+            </div>
+            <button class="gift-nav gift-next" id="giftNext" type="button" aria-label="下一个礼物">›</button>
+          </div>
+          <div class="gift-dots" id="giftDots" aria-hidden="true">
+            <span class="is-on"></span><span></span><span></span>
+          </div>
+          <div class="track-panel" id="trackPanel">
+            <p class="track-label" id="trackLabel">文学冰箱贴 · 快递单号</p>
+            <p class="track-no" id="trackNo">313082364457335</p>
+            <div class="track-actions">
+              <button class="gift-btn track-copy" id="trackCopyBtn" type="button">复制单号</button>
+              <a class="gift-btn track-open" id="trackOpenBtn" href="https://m.kuaidi100.com/result.jsp?nu=313082364457335" target="_blank" rel="noopener noreferrer">打开快递详情</a>
+            </div>
+          </div>
+        </article>
+        <button class="gift-btn ghost" id="btnCloseGift" type="button">收好礼物</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
