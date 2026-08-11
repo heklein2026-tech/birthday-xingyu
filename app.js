@@ -345,17 +345,21 @@
 
     if (litCount >= WISHES.length) {
       if (starTitle) {
-        starTitle.textContent = "你是我夜空里最亮的星";
+        starTitle.textContent = "你是我夜空中最亮的星";
+        starTitle.classList.remove("is-complete");
+        void starTitle.offsetWidth;
         starTitle.classList.add("is-complete");
       }
       if (starTitleEn) {
         starTitleEn.hidden = false;
+        starTitleEn.classList.remove("is-show");
         window.requestAnimationFrame(function () {
           starTitleEn.classList.add("is-show");
         });
       }
       if (starHint) starHint.textContent = "十二颗星都亮了 —— 继续向下";
       shootMeteor();
+      startMeteorShower();
       // 中央文案出现 1 秒后，淡出词语与星点，只留中间一句（仍可下滑）
       window.setTimeout(function () {
         if (starStop) starStop.classList.add("is-star-focus");
@@ -371,6 +375,25 @@
     meteor.classList.remove("is-shooting");
     void meteor.offsetWidth;
     meteor.classList.add("is-shooting");
+  }
+
+  function startMeteorShower() {
+    var layer = document.getElementById("meteorShower");
+    if (!layer || layer.dataset.ready === "1") return;
+    layer.dataset.ready = "1";
+    layer.innerHTML = "";
+    // 布满整屏：从右上到左下多条轨迹
+    for (var i = 0; i < 36; i++) {
+      var s = document.createElement("span");
+      s.style.left = -5 + Math.random() * 120 + "%";
+      s.style.top = -25 + Math.random() * 90 + "%";
+      s.style.width = 100 + Math.random() * 160 + "px";
+      s.style.height = 1.5 + Math.random() * 1.5 + "px";
+      s.style.animationDuration = 2.2 + Math.random() * 3.2 + "s";
+      s.style.animationDelay = Math.random() * 4.5 + "s";
+      layer.appendChild(s);
+    }
+    layer.classList.add("is-on");
   }
 
   buildWishStars();

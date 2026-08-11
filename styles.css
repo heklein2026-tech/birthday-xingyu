@@ -174,6 +174,69 @@ button {
   opacity: calc((var(--phase) - 0.45) / 0.4);
 }
 
+/* 全屏背景流星雨（挂在固定天空层） */
+.meteor-shower {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.meteor-shower.is-on {
+  opacity: 1;
+}
+
+.meteor-shower span {
+  position: absolute;
+  width: 140px;
+  height: 2px;
+  border-radius: 2px;
+  /* 头在左（运动方向：左下），尾在右（拖向右上） */
+  background: linear-gradient(
+    90deg,
+    #fff 0%,
+    rgba(255, 248, 220, 0.95) 18%,
+    rgba(255, 250, 230, 0.35) 55%,
+    rgba(255, 250, 230, 0.08) 82%,
+    transparent 100%
+  );
+  filter: drop-shadow(0 0 8px rgba(255, 230, 160, 0.9));
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: meteor-rain-full 3.2s linear infinite;
+}
+
+.meteor-shower span::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  transform: translateY(-50%);
+  box-shadow: 0 0 10px 3px rgba(255, 236, 190, 0.85);
+}
+
+@keyframes meteor-rain-full {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(-40deg);
+  }
+  6% { opacity: 1; }
+  70% { opacity: 0.85; }
+  100% {
+    opacity: 0;
+    transform: translate3d(-120vw, 135vh, 0) rotate(-40deg);
+  }
+}
+
 /* ===== 音乐按钮 ===== */
 
 .music-btn {
@@ -750,16 +813,17 @@ body.is-night .stop-photo figcaption {
 }
 
 .stop-inner-stars .stop-title.is-complete {
-  font-size: clamp(1.15rem, 5.2vw, 1.55rem);
-  letter-spacing: 0.04em;
+  font-size: clamp(1.35rem, 6.2vw, 1.95rem);
+  letter-spacing: 0.06em;
   text-shadow:
     0 2px 16px rgba(0, 0, 0, 0.45),
-    0 0 24px rgba(255, 220, 160, 0.35);
+    0 0 28px rgba(255, 220, 160, 0.45);
+  animation: star-title-grow 2.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .star-title-en {
   margin: -2px 0 10px;
-  max-width: 16em;
+  max-width: 18em;
   font-family: "Times New Roman", Times, serif;
   font-style: italic;
   font-size: 11px;
@@ -768,13 +832,24 @@ body.is-night .stop-photo figcaption {
   color: rgba(255, 246, 220, 0.72);
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
   opacity: 0;
-  transform: translateY(6px);
+  transform: translateY(6px) scale(0.92);
   transition: opacity 0.55s ease 0.12s, transform 0.55s ease 0.12s;
 }
 
 .star-title-en.is-show {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
+  animation: star-en-grow 2.6s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+}
+
+@keyframes star-title-grow {
+  0% { transform: scale(0.9); opacity: 0.75; letter-spacing: 0.02em; }
+  100% { transform: scale(1.14); opacity: 1; letter-spacing: 0.08em; }
+}
+
+@keyframes star-en-grow {
+  0% { transform: translateY(4px) scale(0.92); font-size: 11px; }
+  100% { transform: translateY(0) scale(1.08); font-size: 13px; }
 }
 
 .stop-inner-stars .stop-line {
@@ -904,33 +979,63 @@ body.is-night .stop-photo figcaption {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  border: 1px solid rgba(255, 230, 180, 0.35);
-  animation: sky-wave 3.2s ease-out infinite;
+  border: 1.5px solid rgba(255, 236, 190, 0.75);
+  box-shadow: 0 0 10px rgba(255, 220, 150, 0.45);
+  animation: sky-wave 2.2s ease-out infinite;
   pointer-events: none;
-  opacity: 0.7;
+  opacity: 0.95;
 }
 
 .sky-tap-wave.delay {
-  animation-delay: 1.5s;
+  animation-delay: 1.1s;
+}
+
+/* 未点亮：更强光波引导 */
+.sky-tap:not(.is-lit) .sky-tap-wave {
+  border-color: rgba(255, 240, 200, 0.9);
+  box-shadow:
+    0 0 12px rgba(255, 230, 160, 0.55),
+    0 0 22px rgba(255, 200, 120, 0.28);
+}
+
+.sky-tap:not(.is-lit)::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 230, 170, 0.28), transparent 70%);
+  animation: sky-pulse-ring 2.2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 已点亮：弱化 */
+.sky-tap.is-lit {
+  opacity: 0.38;
+  filter: saturate(0.55) brightness(0.85);
 }
 
 .sky-tap.is-lit .sky-tap-icon {
-  width: 34px;
-  height: 34px;
+  width: 26px;
+  height: 26px;
   filter:
-    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.85))
-    drop-shadow(0 3px 5px rgba(70, 40, 8, 0.45))
-    drop-shadow(0 0 10px rgba(255, 224, 150, 0.8))
-    drop-shadow(0 0 18px rgba(255, 210, 120, 0.4));
-  animation: sky-twinkle-lit 2.8s ease-in-out infinite;
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.25))
+    drop-shadow(0 0 4px rgba(255, 220, 150, 0.25));
+  animation: sky-twinkle-lit 4.5s ease-in-out infinite;
 }
 
-.sky-tap.is-lit .sky-tap-wave {
-  opacity: 0.25;
+.sky-tap.is-lit .sky-tap-wave,
+.sky-tap.is-lit::before {
+  opacity: 0 !important;
+  animation: none !important;
 }
 
 .sky-tap:active .sky-tap-icon {
@@ -945,22 +1050,26 @@ body.is-night .stop-photo figcaption {
 }
 
 @keyframes sky-twinkle-lit {
-  0%, 100% { opacity: 0.82; transform: translate(-50%, -50%) scale(1); }
-  45% { opacity: 1; transform: translate(-50%, -50%) scale(1.04); }
-  75% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.01); }
+  0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.75; transform: translate(-50%, -50%) scale(1.02); }
 }
 
 @keyframes sky-wave {
   0% {
-    width: 16px;
-    height: 16px;
-    opacity: 0.4;
+    width: 18px;
+    height: 18px;
+    opacity: 0.85;
   }
   100% {
-    width: 48px;
-    height: 48px;
+    width: 64px;
+    height: 64px;
     opacity: 0;
   }
+}
+
+@keyframes sky-pulse-ring {
+  0%, 100% { opacity: 0.35; transform: translate(-50%, -50%) scale(0.9); }
+  50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.15); }
 }
 
 .sky-word {
@@ -1011,6 +1120,7 @@ body.is-night .stop-photo figcaption {
   opacity: 0;
   pointer-events: none;
   filter: drop-shadow(0 0 6px #ffe8a0);
+  z-index: 1;
 }
 
 .meteor.is-shooting {
@@ -1988,9 +2098,9 @@ body.intro-mode .stars-canvas {
 
 /* 礼物卡片 */
 .gift-card {
-  width: min(320px, 94%);
-  margin: 8px auto 10px;
-  padding: 12px 12px 10px;
+  width: min(380px, 96%);
+  margin: 4px auto 8px;
+  padding: 10px 8px 8px;
   border-radius: 16px;
   border: 1px solid rgba(232, 200, 120, 0.5);
   background:
@@ -2002,7 +2112,7 @@ body.intro-mode .stars-canvas {
   overflow: visible;
   flex: 1 1 auto;
   min-height: 0;
-  max-height: calc(94dvh - 168px);
+  max-height: calc(94dvh - 150px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -2108,8 +2218,9 @@ body.intro-mode .stars-canvas {
   width: 100%;
   padding: 0;
   border: none;
-  background: #1a1028;
-  aspect-ratio: 16 / 10;
+  background: #120a1c;
+  /* 按原图画幅显示，不再强制裁成 16:10 */
+  aspect-ratio: auto;
   overflow: hidden;
 }
 
@@ -2119,11 +2230,12 @@ body.intro-mode .stars-canvas {
 
 .gift-item img {
   width: 100%;
-  height: 100%;
+  height: auto;
+  max-height: min(52vh, 460px);
   object-fit: contain;
   object-position: center;
   display: block;
-  background: #1a1028;
+  background: #120a1c;
   pointer-events: none;
 }
 
