@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=Great+Vibes&family=Noto+Serif+SC:wght@400;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20260811c" />
+  <link rel="stylesheet" href="styles.css?v=20260811f" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E" />
 </head>
 <body>
@@ -173,10 +173,10 @@
     <!-- 终章 -->
     <section class="stop stop-finale" id="finale" data-phase="1">
       <div class="stop-inner finale-inner">
-        <p class="stop-label">二十三 · 终章</p>
+        <p class="stop-label"><span class="finale-en">23rd · Starry Night</span></p>
         <h2 class="finale-name"><span class="finale-en">Dear</span>王星宇</h2>
         <div class="finale-letter" id="finaleLetter">
-          <p>生日快乐！</p>
+          <p><span class="finale-en">Happy Birthday!</span></p>
           <p>人生那么辽阔，不一定要往高处走，也可以四处走。</p>
           <p>23岁，在人生的6点，在热烈的盛夏。</p>
           <p>祝你一直生机勃勃，祝你高歌猛进，顺利前行！</p>
@@ -324,37 +324,69 @@
       <div class="gift-step" data-step="6">
         <h2 class="gift-title">生日礼物详情</h2>
         <article class="gift-card" id="giftCard">
+          <p class="gift-card-lead">左右滑动切换礼物；点击图片翻转查看快递</p>
           <div class="gift-carousel">
             <button class="gift-nav gift-prev" id="giftPrev" type="button" aria-label="上一个礼物">‹</button>
             <div class="gift-gallery" id="giftGallery">
               <div class="gift-item" data-track="313082364457335" data-name="契诃夫文学牌">
-                <button class="gift-photo" type="button" aria-label="查看文学小牌快递">
-                  <img src="assets/gifts/gift-01.png" alt="契诃夫文学冰箱贴" loading="lazy" />
-                </button>
+                <div class="gift-flip">
+                  <button class="gift-flip-face gift-flip-front" type="button" aria-label="翻转查看文学小牌快递">
+                    <img src="assets/gifts/gift-01.png" alt="契诃夫文学冰箱贴" loading="lazy" />
+                    <span class="gift-flip-hint">点击翻转</span>
+                  </button>
+                  <div class="gift-flip-face gift-flip-back">
+                    <p class="gift-back-name">契诃夫文学牌</p>
+                    <p class="gift-back-label">快递单号</p>
+                    <p class="gift-back-no">313082364457335</p>
+                    <div class="gift-back-actions">
+                      <button class="gift-btn track-copy" type="button" data-track="313082364457335">复制单号</button>
+                      <a class="gift-btn track-open" href="https://m.kuaidi100.com/result.jsp?nu=313082364457335" target="_blank" rel="noopener noreferrer">打开快递详情</a>
+                    </div>
+                    <button class="gift-flip-back-btn" type="button">返回正面</button>
+                  </div>
+                </div>
               </div>
               <div class="gift-item" data-track="313082364440565" data-name="Infinite Poetry 日历">
-                <button class="gift-photo" type="button" aria-label="查看诗歌日历快递">
-                  <img src="assets/gifts/gift-02.png" alt="Infinite Poetry 日历" loading="lazy" />
-                </button>
+                <div class="gift-flip">
+                  <button class="gift-flip-face gift-flip-front" type="button" aria-label="翻转查看诗歌日历快递">
+                    <img src="assets/gifts/gift-02.png" alt="Infinite Poetry 日历" loading="lazy" />
+                    <span class="gift-flip-hint">点击翻转</span>
+                  </button>
+                  <div class="gift-flip-face gift-flip-back">
+                    <p class="gift-back-name">Infinite Poetry 日历</p>
+                    <p class="gift-back-label">快递单号</p>
+                    <p class="gift-back-no">313082364440565</p>
+                    <div class="gift-back-actions">
+                      <button class="gift-btn track-copy" type="button" data-track="313082364440565">复制单号</button>
+                      <a class="gift-btn track-open" href="https://m.kuaidi100.com/result.jsp?nu=313082364440565" target="_blank" rel="noopener noreferrer">打开快递详情</a>
+                    </div>
+                    <button class="gift-flip-back-btn" type="button">返回正面</button>
+                  </div>
+                </div>
               </div>
               <div class="gift-item" data-track="73721344117155" data-name="小小气味书香薰">
-                <button class="gift-photo" type="button" aria-label="查看小小气味书快递">
-                  <img src="assets/gifts/gift-03.png" alt="小小气味书香薰" loading="lazy" />
-                </button>
+                <div class="gift-flip">
+                  <button class="gift-flip-face gift-flip-front" type="button" aria-label="翻转查看小小气味书快递">
+                    <img src="assets/gifts/gift-03.png" alt="小小气味书香薰" loading="lazy" />
+                    <span class="gift-flip-hint">点击翻转</span>
+                  </button>
+                  <div class="gift-flip-face gift-flip-back">
+                    <p class="gift-back-name">小小气味书香薰</p>
+                    <p class="gift-back-label">快递单号</p>
+                    <p class="gift-back-no">73721344117155</p>
+                    <div class="gift-back-actions">
+                      <button class="gift-btn track-copy" type="button" data-track="73721344117155">复制单号</button>
+                      <a class="gift-btn track-open" href="https://m.kuaidi100.com/result.jsp?nu=73721344117155" target="_blank" rel="noopener noreferrer">打开快递详情</a>
+                    </div>
+                    <button class="gift-flip-back-btn" type="button">返回正面</button>
+                  </div>
+                </div>
               </div>
             </div>
             <button class="gift-nav gift-next" id="giftNext" type="button" aria-label="下一个礼物">›</button>
           </div>
           <div class="gift-dots" id="giftDots" aria-hidden="true">
             <span class="is-on"></span><span></span><span></span>
-          </div>
-          <div class="track-panel" id="trackPanel">
-            <p class="track-label" id="trackLabel">文学冰箱贴 · 快递单号</p>
-            <p class="track-no" id="trackNo">313082364457335</p>
-            <div class="track-actions">
-              <button class="gift-btn track-copy" id="trackCopyBtn" type="button">复制单号</button>
-              <a class="gift-btn track-open" id="trackOpenBtn" href="https://m.kuaidi100.com/result.jsp?nu=313082364457335" target="_blank" rel="noopener noreferrer">打开快递详情</a>
-            </div>
           </div>
         </article>
         <button class="gift-btn ghost btn-guide" id="btnCloseGift" type="button">收好礼物</button>
@@ -374,6 +406,6 @@
       <p class="chat-tip" id="chatTip" hidden>若未自动跳转，请手动打开微信找小何～</p>
     </div>
   </div>
-  <script src="app.js?v=20260811c"></script>
+  <script src="app.js?v=20260811f"></script>
 </body>
 </html>
