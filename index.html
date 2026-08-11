@@ -185,7 +185,7 @@
         <button class="play-cta" id="playCta" type="button">
           <span>播放 才二十三</span>
         </button>
-        <button class="gift-open-btn" id="giftOpenBtn" type="button">
+        <button class="gift-open-btn btn-guide" id="giftOpenBtn" type="button">
           <span>打开生日礼物</span>
         </button>
         <div class="finale-petals" id="finalePetals" aria-hidden="true"></div>
@@ -193,7 +193,7 @@
     </section>
   </main>
 
-  <!-- ===== 生日吹蜡烛互动弹窗（5 环节） ===== -->
+  <!-- ===== 生日吹蜡烛互动弹窗（6 环节） ===== -->
   <div class="gift-modal" id="giftModal" hidden>
     <div class="gift-blur" aria-hidden="true"></div>
     <div class="gift-petals" id="giftPetals" aria-hidden="true"></div>
@@ -232,11 +232,25 @@
             <div class="cake-plate"></div>
           </div>
         </div>
-        <button class="gift-btn" id="btnStartBlow" type="button">开始吹蜡烛</button>
+        <button class="gift-btn btn-guide" id="btnStartWish" type="button">开始许愿</button>
+      </div>
+      <!-- 环节2：许愿 -->
+      <div class="gift-step" data-step="2">
+        <h2 class="gift-title">许一个愿望</h2>
+        <p class="gift-sub">闭上眼睛，把心愿轻轻放进这颗星里</p>
+        <div class="wish-stage" aria-hidden="true">
+          <div class="wish-orbit"></div>
+          <div class="wish-star" id="wishStar">
+            <span class="wish-star-core"></span>
+            <span class="wish-star-ray"></span>
+          </div>
+          <p class="wish-whisper">不必说出口，风会替你听见</p>
+        </div>
+        <button class="gift-btn btn-guide" id="btnWishDone" type="button">许愿完成</button>
       </div>
 
       <!-- 环节2 -->
-      <div class="gift-step" data-step="2">
+      <div class="gift-step" data-step="3">
         <h2 class="gift-title">对着蛋糕用力吹气</h2>
         <div class="blow-meter" id="blowMeter" aria-label="吹气进度">
           <div class="blow-wave" id="blowWave"></div>
@@ -263,7 +277,7 @@
       </div>
 
       <!-- 环节3 -->
-      <div class="gift-step" data-step="3">
+      <div class="gift-step" data-step="4">
         <h2 class="gift-title">蜡烛吹灭啦！</h2>
         <div class="cake-wrap cake-wrap-sm">
           <div class="cake">
@@ -282,11 +296,16 @@
           </div>
         </div>
         <p class="wish-toast" id="wishToast">生日愿望已收下</p>
-        <button class="gift-btn" id="btnClaimGift" type="button">领取生日礼物</button>
+        <div class="claim-wrap">
+          <span class="claim-halo" aria-hidden="true"></span>
+          <span class="claim-halo delay" aria-hidden="true"></span>
+          <button class="gift-btn claim-btn btn-guide" id="btnClaimGift" type="button">来领取礼物吧~</button>
+          <span class="claim-spark" aria-hidden="true"></span>
+        </div>
       </div>
 
       <!-- 环节4 -->
-      <div class="gift-step" data-step="4">
+      <div class="gift-step" data-step="5">
         <h2 class="gift-title">生日快乐礼物已解锁</h2>
         <div class="treasure" id="treasure">
           <div class="treasure-glow"></div>
@@ -297,14 +316,13 @@
           </div>
         </div>
         <p class="gift-sub">点击领取，查看你的专属生日礼物</p>
-        <button class="gift-btn" id="btnOpenGift" type="button">立即领取</button>
+        <button class="gift-btn btn-guide" id="btnOpenGift" type="button">立即领取</button>
       </div>
 
       <!-- 环节5 -->
-      <div class="gift-step" data-step="5">
+      <div class="gift-step" data-step="6">
         <h2 class="gift-title">生日礼物详情</h2>
         <article class="gift-card" id="giftCard">
-          <p class="gift-card-lead">左右滑动或点箭头切换；点击图片查快递</p>
           <div class="gift-carousel">
             <button class="gift-nav gift-prev" id="giftPrev" type="button" aria-label="上一个礼物">‹</button>
             <div class="gift-gallery" id="giftGallery">
@@ -312,22 +330,16 @@
                 <button class="gift-photo" type="button" aria-label="查看文学小牌快递">
                   <img src="assets/gifts/gift-01.png" alt="契诃夫文学冰箱贴" loading="lazy" />
                 </button>
-                <span class="gift-item-name">文学冰箱贴</span>
-                <span class="gift-item-track">单号 313082364457335</span>
               </div>
               <div class="gift-item" data-track="313082364440565" data-name="Infinite Poetry 日历">
                 <button class="gift-photo" type="button" aria-label="查看诗歌日历快递">
                   <img src="assets/gifts/gift-02.png" alt="Infinite Poetry 日历" loading="lazy" />
                 </button>
-                <span class="gift-item-name">诗歌日历</span>
-                <span class="gift-item-track">单号 313082364440565</span>
               </div>
               <div class="gift-item" data-track="73721344117155" data-name="小小气味书香薰">
                 <button class="gift-photo" type="button" aria-label="查看小小气味书快递">
                   <img src="assets/gifts/gift-03.png" alt="小小气味书香薰" loading="lazy" />
                 </button>
-                <span class="gift-item-name">小小气味书香薰</span>
-                <span class="gift-item-track">单号 73721344117155</span>
               </div>
             </div>
             <button class="gift-nav gift-next" id="giftNext" type="button" aria-label="下一个礼物">›</button>
@@ -344,11 +356,23 @@
             </div>
           </div>
         </article>
-        <button class="gift-btn ghost" id="btnCloseGift" type="button">收好礼物</button>
+        <button class="gift-btn ghost btn-guide" id="btnCloseGift" type="button">收好礼物</button>
       </div>
     </div>
   </div>
 
+
+  <!-- ===== 收好礼物后：邀请聊天 ===== -->
+  <div class="chat-modal" id="chatModal" hidden>
+    <div class="chat-blur" aria-hidden="true"></div>
+    <div class="chat-card" role="dialog" aria-modal="true" aria-labelledby="chatTitle">
+      <p class="chat-eyebrow">给小星的悄悄话</p>
+      <h2 class="chat-title" id="chatTitle">嘻嘻，快来找我聊天吧，你觉得这个礼物怎么样呢</h2>
+      <button class="gift-btn btn-guide chat-cta" id="chatOpenBtn" type="button">立即聊天</button>
+      <button class="chat-later" id="chatLaterBtn" type="button">稍后再说</button>
+      <p class="chat-tip" id="chatTip" hidden>若未自动跳转，请手动打开微信找小何～</p>
+    </div>
+  </div>
   <script src="app.js"></script>
 </body>
 </html>

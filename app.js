@@ -399,6 +399,10 @@
 
   /* ---------- 音乐 ---------- */
   let audioMissing = false;
+  const TRACK_MAIN = "assets/audio/才二十三.mp3";
+  const TRACK_BDAY = "assets/audio/happy-birthday.mp3";
+  let currentTrackSrc = TRACK_MAIN;
+  let giftMusicOn = false;
 
   function setPlayingUI(playing) {
     musicBtn.classList.toggle("is-playing", playing);
@@ -410,9 +414,47 @@
     }
     musicBtn.querySelector(".music-label").textContent = playing ? "播放中" : "音乐";
     playCta.classList.toggle("is-playing", playing);
-    playCta.querySelector("span").textContent = playing
-      ? "正在播放 才二十三"
-      : "播放 才二十三";
+    if (giftMusicOn) {
+      playCta.querySelector("span").textContent = playing
+        ? "正在播放生日歌"
+        : "播放生日歌";
+    } else {
+      playCta.querySelector("span").textContent = playing
+        ? "正在播放 才二十三"
+        : "播放 才二十三";
+    }
+  }
+
+  async function switchMusic(src, opts) {
+    opts = opts || {};
+    if (!bgMusic || audioMissing) return false;
+    var forcePlay = !!opts.forcePlay;
+    var keepPaused = !!opts.keepPaused;
+    var needReload = currentTrackSrc !== src;
+    currentTrackSrc = src;
+    try {
+      if (needReload) {
+        bgMusic.pause();
+        var source = bgMusic.querySelector("source");
+        if (source) source.setAttribute("src", src);
+        bgMusic.src = src;
+        bgMusic.load();
+      }
+      bgMusic.volume = 0.85;
+      if (!keepPaused && (forcePlay || !bgMusic.paused || needReload)) {
+        await bgMusic.play();
+        musicReady = true;
+        setPlayingUI(true);
+      } else if (bgMusic.paused) {
+        setPlayingUI(false);
+      } else {
+        setPlayingUI(true);
+      }
+      return true;
+    } catch (err) {
+      console.warn("Audio switch failed:", err);
+      return false;
+    }
   }
 
   async function startMusic() {
@@ -1047,6 +1089,14 @@
       el.classList.toggle("is-active", Number(el.getAttribute("data-step")) === step);
     });
     if (step === 2) {
+      var wishStar = document.getElementById("wishStar");
+      if (wishStar) {
+        wishStar.classList.remove("is-glow");
+        void wishStar.offsetWidth;
+        wishStar.classList.add("is-glow");
+      }
+    }
+    if (step === 3) {
       blowProgress = 0;
       blowDone = false;
       if (blowFill) blowFill.style.width = "0%";
@@ -1054,11 +1104,11 @@
       if (flame2) flame2.style.opacity = "1";
       if (blowHint) blowHint.textContent = "按住屏幕吹气";
     }
-    if (step === 3) {
+    if (step === 4) {
       burstConfetti();
       spawnGiftPetals(18);
     }
-    if (step === 5 && giftCard) {
+    if (step === 6 && giftCard) {
       giftCard.classList.remove("is-in");
       void giftCard.offsetWidth;
       giftCard.classList.add("is-in");
@@ -1073,6 +1123,8 @@
     if (!giftModal) return;
     giftModal.hidden = false;
     document.body.classList.add("gift-lock");
+    giftMusicOn = true;
+    switchMusic(TRACK_BDAY, { forcePlay: true });
     spawnGiftPetals(16);
     buildBlowWave();
     setGiftStep(1);
@@ -1088,10 +1140,46 @@
     giftModal.hidden = true;
     document.body.classList.remove("gift-lock");
     if (giftConfetti) giftConfetti.innerHTML = "";
+    giftMusicOn = false;
+    switchMusic(TRACK_MAIN, { forcePlay: true });
+    openChatModal();
+  }
+
+  function openChatModal() {
+    var chatModal = document.getElementById("chatModal");
+    if (!chatModal) return;
+    chatModal.hidden = false;
+    document.body.classList.add("chat-lock");
+    window.requestAnimationFrame(function () {
+      chatModal.classList.add("is-show");
+    });
+  }
+
+  function closeChatModal() {
+    var chatModal = document.getElementById("chatModal");
+    if (!chatModal) return;
+    chatModal.classList.remove("is-show");
+    document.body.classList.remove("chat-lock");
+    window.setTimeout(function () {
+      chatModal.hidden = true;
+    }, 280);
+  }
+
+  function openWeChatChat() {
+    // 唤起微信 App（手机端有效；浏览器可能拦截）
+    try {
+      window.location.href = "weixin://";
+    } catch (err) {
+      console.warn("Open WeChat failed:", err);
+    }
+    window.setTimeout(function () {
+      var tip = document.getElementById("chatTip");
+      if (tip && !document.hidden) tip.hidden = false;
+    }, 900);
   }
 
   function tickBlow() {
-    if (!blowing || blowDone || giftStep !== 2) return;
+    if (!blowing || blowDone || giftStep !== 3) return;
     blowProgress = Math.min(100, blowProgress + 1.35);
     if (blowFill) blowFill.style.width = blowProgress + "%";
     if (blowRipples) blowRipples.classList.add("is-on");
@@ -1106,7 +1194,7 @@
       if (flame2) flame2.style.opacity = "0";
       if (blowHint) blowHint.textContent = "蜡烛熄灭了…";
       window.setTimeout(function () {
-        setGiftStep(3);
+        setGiftStep(4);
       }, 700);
       return;
     }
@@ -1114,7 +1202,7 @@
   }
 
   function startBlow() {
-    if (giftStep !== 2 || blowDone) return;
+    if (giftStep !== 3 || blowDone) return;
     blowing = true;
     cancelAnimationFrame(blowRaf);
     blowRaf = requestAnimationFrame(tickBlow);
@@ -1127,9 +1215,9 @@
 
   if (giftOpenBtn) giftOpenBtn.addEventListener("click", openGiftModal);
 
-  const btnStartBlow = document.getElementById("btnStartBlow");
-  if (btnStartBlow) {
-    btnStartBlow.addEventListener("click", function () {
+  const btnStartWish = document.getElementById("btnStartWish");
+  if (btnStartWish) {
+    btnStartWish.addEventListener("click", function () {
       if (cakeWrap) {
         cakeWrap.classList.add("is-pop");
         window.setTimeout(function () {
@@ -1142,12 +1230,23 @@
     });
   }
 
+  const btnWishDone = document.getElementById("btnWishDone");
+  if (btnWishDone) {
+    btnWishDone.addEventListener("click", function () {
+      var wishStar = document.getElementById("wishStar");
+      if (wishStar) wishStar.classList.add("is-grant");
+      window.setTimeout(function () {
+        setGiftStep(3);
+      }, 420);
+    });
+  }
+
   const btnClaimGift = document.getElementById("btnClaimGift");
   if (btnClaimGift) {
     btnClaimGift.addEventListener("click", function () {
       btnClaimGift.classList.add("is-glow");
       window.setTimeout(function () {
-        setGiftStep(4);
+        setGiftStep(5);
       }, 350);
     });
   }
@@ -1157,7 +1256,7 @@
     btnOpenGift.addEventListener("click", function () {
       if (treasureBox) treasureBox.classList.add("is-open");
       window.setTimeout(function () {
-        setGiftStep(5);
+        setGiftStep(6);
       }, 650);
     });
   }
@@ -1165,10 +1264,17 @@
   const btnCloseGift = document.getElementById("btnCloseGift");
   if (btnCloseGift) btnCloseGift.addEventListener("click", closeGiftModal);
 
-  // 环节2：按住吹气（整框可操作）
+  const chatOpenBtn = document.getElementById("chatOpenBtn");
+  if (chatOpenBtn) {
+    chatOpenBtn.addEventListener("click", openWeChatChat);
+  }
+  const chatLaterBtn = document.getElementById("chatLaterBtn");
+  if (chatLaterBtn) chatLaterBtn.addEventListener("click", closeChatModal);
+
+  // 环节3：按住吹气（整框可操作）
   if (giftModal) {
     giftModal.addEventListener("pointerdown", function (e) {
-      if (giftStep !== 2) return;
+      if (giftStep !== 3) return;
       if (e.target.closest(".gift-btn")) return;
       startBlow();
     });
